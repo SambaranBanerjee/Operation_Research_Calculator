@@ -1,6 +1,6 @@
-import { FlatList, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, Text, TextInput, View } from 'react-native';
 import React, { useState } from 'react';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { Link } from 'expo-router';
 
 export const initialData = [
   { id: '1', name: 'Transportation Problem' },
@@ -9,15 +9,9 @@ export const initialData = [
   { id: '4', name: 'Network Flow Problem' }
 ];
 
-type RootStackParamList = {
-    Home: undefined;
-    TargetScreen: { item: { id: string; name: string } };
-};
-
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredData, setFilteredData] = useState(initialData);
-    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
     const handleSearch = (text: string) => {
         setSearchQuery(text);
@@ -41,19 +35,19 @@ const SearchBar = () => {
         data={filteredData}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-            <TouchableOpacity 
-              onPress={() => navigation.navigate('TargetScreen' , { item })}
-              className='
-                bg-none 
-                border-b 
-                border-gray-300 
-                py-2
-                scroll-py-2'
+            <Link 
+              href={`/Operations/${encodeURIComponent(item.name)}`}
+              style={{
+                paddingVertical: 12,
+                borderBottomWidth: 1,
+                borderColor: '#D1D5DB',
+              }}
+              
             >
-                <Text className='text-lg'>
+                <Text className="text-lg">
                     {item.name}
                 </Text>
-            </TouchableOpacity>
+            </Link>
         )}
       />
     </View>

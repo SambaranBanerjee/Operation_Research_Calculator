@@ -11,7 +11,7 @@ export default function RootLayout() {
         }}
       />
       <Stack.Screen
-        name="Operations/[id]"
+        name="Operations/[operation]"
         options={{
           headerShown: false,
         }}

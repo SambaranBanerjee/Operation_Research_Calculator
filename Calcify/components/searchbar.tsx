@@ -9,6 +9,13 @@ export const initialData = [
   { id: '4', name: 'Network Flow Problem' }
 ];
 
+const operationNameToKey: Record<string, string> = {
+  'Transportation Problem': 'transportationProblem',
+  'Linear Programming Problem': 'linearProgrammingProblem',
+  'Assignment Problem': 'assignmentProblem',
+  'Network Flow Problem': 'networkFlowProblem',
+};
+
 const SearchBar = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredData, setFilteredData] = useState(initialData);
@@ -36,7 +43,7 @@ const SearchBar = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
             <Link 
-              href={`/Operations/${encodeURIComponent(item.name)}`}
+              href={`/Operations/${operationNameToKey[item.name]}`}
               style={{
                 paddingVertical: 12,
                 borderBottomWidth: 1,

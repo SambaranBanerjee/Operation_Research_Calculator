@@ -15,7 +15,7 @@ const Functions = () => {
   const [showForm, setShowForm] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
-  // STEP 1 → Load the operation when the screen opens
+  // Load the operation when the screen opens
   useEffect(() => {
     if (!operation) return;
 
@@ -32,7 +32,7 @@ const Functions = () => {
     setShowResult(false);
   }, [operation]);
 
-  // STEP 2 → Submit form data & compute result
+  // Submit form data & compute result
   const handleSubmit = (data: any) => {
     if (!operation) return;
     const opFunction = operations[operation as keyof typeof operations];
@@ -44,7 +44,7 @@ const Functions = () => {
     setShowForm(false);
   };
 
-  // STEP 3 → Back button logic
+  // Back button logic
   const handleBack = () => {
     if (showResult) {
       setShowResult(false);
@@ -67,7 +67,7 @@ const Functions = () => {
     </Pressable>
   );
 
-  // --- STEP 1: Choose Method ---
+  // Choose Method 
   if (
     result &&
     typeof result === 'object' &&
@@ -101,7 +101,7 @@ const Functions = () => {
     );
   }
 
-  // --- STEP 2: Show Transportation Form ---
+  // Show Transportation Form 
   if (showForm) {
     if (operation === 'transportationProblem') {
       return (
@@ -121,12 +121,12 @@ const Functions = () => {
     }
   }
 
-  // --- STEP 3: Show Result ---
+  // Show Result 
   if (showResult && result) {
     return (
       <ScreenWrapper>
         <ScrollView className="p-6 mt-28">
-          <Text className="text-3xl font-bold mb-4 text-white">Result</Text>
+          <Text className="text-3xl font-bold mb-4 text-[#000000]">Result</Text>
 
           {typeof result === 'string' ? (
             <Text className="text-white bg-black/40 p-4 rounded-md">{result}</Text>

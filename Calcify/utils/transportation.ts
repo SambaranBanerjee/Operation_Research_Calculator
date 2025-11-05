@@ -6,12 +6,21 @@ export interface Allocation {
   amount: number;
 }
 
+export interface Solution {
+  allocation: Allocation[];
+  totalCost: number;
+}
+
+function calculateTotalCost(allocation: Allocation[], cost: number[][]): number {
+  return allocation.reduce((sum, alloc) => sum + alloc.amount * cost[alloc.row][alloc.col], 0);
+}
+
 export const transportationProblem = (
   method?: TransportationMethod,
   cost?: number[][],
   supply?: number[],
   demand?: number[]
-): Allocation[] | { prompt: string; methods: { key: TransportationMethod; label: string }[] } | string => {
+): Solution | { prompt: string; methods: { key: TransportationMethod; label: string }[] } | string => {
   if (!method) {
     return {
       prompt: 'Choose a method to solve the Transportation Problem:',
@@ -25,16 +34,25 @@ export const transportationProblem = (
 
   if (!cost || !supply || !demand) return 'Cost matrix, supply and demand must be provided';
 
-  switch (method) {
-    case 'northWest':
-      return northWestMethod(cost, supply, demand);
-    case 'leastCost':
-      return leastCostMethod(cost, supply, demand);
-    case 'vogels':
-      return vogelsApproximationMethod(cost, supply, demand);
-    default:
-      return 'Invalid or unknown method';
-  }
+  let allocation: Allocation[] = [];
+
+    switch (method) {
+        case 'northWest':
+            allocation = northWestMethod(cost, supply, demand);
+            break;
+        case 'leastCost':
+            allocation = leastCostMethod(cost, supply, demand);
+            break;
+        case 'vogels':
+            allocation = vogelsApproximationMethod(cost, supply, demand);
+            break;
+        default:
+            return 'Invalid or unknown method';
+    }
+
+    const totalCost = calculateTotalCost(allocation, cost);
+
+    return { allocation, totalCost };
 };
 
 function cloneArray<T>(arr: T[]): T[] {

@@ -7,6 +7,7 @@ interface TransportationFormProps {
     cost: number[][];
     supply: number[];
     demand: number[];
+    mode?: 'leastCost' | 'maxProfit';
   }) => void;
 }
 
@@ -22,7 +23,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({ onBack, onSubmi
     setDemand(Array(cols).fill(''));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (mode: 'leastCost' | 'maxProfit') => {
     const cost = costMatrix.map(row => row.map(Number));
     const s = supply.map(Number);
     const d = demand.map(Number);
@@ -36,19 +37,23 @@ const TransportationForm: React.FC<TransportationFormProps> = ({ onBack, onSubmi
       return;
     }
 
-    onSubmit({ cost, supply: s, demand: d });
+    // If maximizing profit → convert profit matrix to cost matrix by negating
+    const transformedCost =
+      mode === 'maxProfit' ? cost.map(row => row.map(value => -value)) : cost;
+
+    onSubmit({ cost: transformedCost, supply: s, demand: d, mode });
   };
 
   return (
     <ScrollView className="p-6 mt-32">
-      <Text className="text-2xl font-bold mb-4">Enter Transportation Details</Text>
+      <Text className="text-2xl font-bold mb-4 text-[#000000]">Enter Transportation Details</Text>
 
       {/* Matrix Size Input */}
       <View className="flex-row justify-between mb-4">
         <View className="flex-1 mr-2">
-          <Text className="text-lg mb-1">Rows</Text>
+          <Text className="text-lg mb-1 text-[#000000]">Rows</Text>
           <TextInput
-            className="border border-gray-400 rounded-md p-2 text-center"
+            className="border border-gray-400 rounded-md p-2 text-center bg-white"
             placeholder="e.g. 3"
             keyboardType="numeric"
             onChangeText={(text) =>
@@ -57,9 +62,9 @@ const TransportationForm: React.FC<TransportationFormProps> = ({ onBack, onSubmi
           />
         </View>
         <View className="flex-1 ml-2">
-          <Text className="text-lg mb-1">Columns</Text>
+          <Text className="text-lg mb-1 text-[#000000]">Columns</Text>
           <TextInput
-            className="border border-gray-400 rounded-md p-2 text-center"
+            className="border border-gray-400 rounded-md p-2 text-center bg-white"
             placeholder="e.g. 4"
             keyboardType="numeric"
             onChangeText={(text) =>
@@ -71,7 +76,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({ onBack, onSubmi
 
       {/* Cost Matrix */}
       <View className="mt-4">
-        <Text className="text-lg font-semibold mb-2">Cost Matrix</Text>
+        <Text className="text-lg font-semibold mb-2 text-[#000000]">Cost / Profit Matrix</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={true}>
           <ScrollView showsVerticalScrollIndicator={true}>
             <View className="flex flex-col">
@@ -88,7 +93,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({ onBack, onSubmi
                       }}
                       placeholder={`${rowIndex + 1},${colIndex + 1}`}
                       keyboardType="numeric"
-                      className="border border-gray-400 rounded-md p-2 w-16 text-center mx-1"
+                      className="border border-gray-400 rounded-md p-2 w-16 text-center mx-1 bg-white"
                     />
                   ))}
                 </View>
@@ -100,7 +105,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({ onBack, onSubmi
 
       {/* Supply Inputs */}
       <View className="mt-6">
-        <Text className="text-lg font-semibold mb-2">Supply</Text>
+        <Text className="text-lg font-semibold mb-2 text-[#000000]">Supply</Text>
         <View className="flex-row flex-wrap">
           {supply.map((val, i) => (
             <TextInput
@@ -113,7 +118,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({ onBack, onSubmi
               }}
               placeholder={`S${i + 1}`}
               keyboardType="numeric"
-              className="border border-gray-400 rounded-md p-2 w-16 text-center mx-1 mb-2"
+              className="border border-gray-400 rounded-md p-2 w-16 text-center mx-1 mb-2 bg-white"
             />
           ))}
         </View>
@@ -121,7 +126,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({ onBack, onSubmi
 
       {/* Demand Inputs */}
       <View className="mt-6">
-        <Text className="text-lg font-semibold mb-2">Demand</Text>
+        <Text className="text-lg font-semibold mb-2 text-[#000000]">Demand</Text>
         <View className="flex-row flex-wrap">
           {demand.map((val, i) => (
             <TextInput
@@ -134,20 +139,32 @@ const TransportationForm: React.FC<TransportationFormProps> = ({ onBack, onSubmi
               }}
               placeholder={`D${i + 1}`}
               keyboardType="numeric"
-              className="border border-gray-400 rounded-md p-2 w-16 text-center mx-1 mb-2"
+              className="border border-gray-400 rounded-md p-2 w-16 text-center mx-1 mb-2 bg-white"
             />
           ))}
         </View>
       </View>
 
-      <Pressable
-        className="bg-green-600 rounded-md p-4 mt-6"
-        onPress={handleSubmit}
-      >
-        <Text className="text-white text-center font-semibold text-lg">
-          Solve
-        </Text>
-      </Pressable>
+      {/* Buttons */}
+      <View className="mt-6">
+        <Pressable
+          className="bg-blue-600 rounded-md p-4 mb-4"
+          onPress={() => handleSubmit('leastCost')}
+        >
+          <Text className="text-white text-center font-semibold text-lg">
+            Least Cost Delivery
+          </Text>
+        </Pressable>
+
+        <Pressable
+          className="bg-green-600 rounded-md p-4 mb-4"
+          onPress={() => handleSubmit('maxProfit')}
+        >
+          <Text className="text-white text-center font-semibold text-lg">
+            Maximum Profit Delivery
+          </Text>
+        </Pressable>
+      </View>
 
       <Pressable
         onPress={onBack}

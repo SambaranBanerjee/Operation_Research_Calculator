@@ -6,6 +6,13 @@ import TransportationForm from '@/components/problems/TransportationForm';
 import { TransportationMethod } from '@/utils/transportation';
 import ScreenWrapper from '@/components/screenwrapper';
 
+type TransportationResult = {
+  allocation?: { row: number; col: number; amount: number }[];
+  totalCost?: number;
+  totalProfit?: number;
+  [key: string]: any;
+};
+
 const Functions = () => {
   const { operation } = useLocalSearchParams<{ operation: string }>();
   const router = useRouter();
@@ -33,16 +40,26 @@ const Functions = () => {
   }, [operation]);
 
   // Submit form data & compute result
-  const handleSubmit = (data: any) => {
-    if (!operation) return;
+    const handleSubmit = (data: any) => {
     const opFunction = operations[operation as keyof typeof operations];
     if (!opFunction) return;
 
-    const res = opFunction(selectedMethod, data.cost, data.supply, data.demand);
+    const rawResult = opFunction(selectedMethod, data.cost, data.supply, data.demand);
+
+    // Make a mutable copy (safe even if it's a string)
+    const res: any = typeof rawResult === 'object' ? { ...rawResult } : rawResult;
+
+    // Adjust for profit mode
+    if (data.mode === 'maxProfit' && res && typeof res === 'object' && res.totalCost !== undefined) {
+      res.totalProfit = -res.totalCost;
+      delete res.totalCost;
+    }
+
     setResult(res);
     setShowResult(true);
     setShowForm(false);
   };
+
 
   // Back button logic
   const handleBack = () => {
@@ -113,7 +130,9 @@ const Functions = () => {
       return (
         <ScreenWrapper>
           <ScrollView className="p-6 mt-32">
-            <Text className="text-[#000000] text-lg">Input form not yet implemented for this operation.</Text>
+            <Text className="text-[#000000] text-lg">
+              Input form not yet implemented for this operation.
+            </Text>
             <BackButton />
           </ScrollView>
         </ScreenWrapper>
@@ -123,45 +142,56 @@ const Functions = () => {
 
   // Show Result 
   if (showResult && result) {
-    return (
-      <ScreenWrapper>
-        <ScrollView className="p-6 mt-28">
-          <Text className="text-3xl font-bold mb-4 text-[#000000]">Result</Text>
+  const isObjectResult = typeof result === 'object' && result !== null;
+  const r = isObjectResult ? (result as TransportationResult) : null;
 
-          {typeof result === 'string' ? (
-            <Text className="text-white bg-black/40 p-4 rounded-md">{result}</Text>
-          ) : (
-            <View className="bg-black/40 p-4 rounded-md">
-              {result.allocation && Array.isArray(result.allocation) && (
-                <>
-                  <Text className="text-lg font-semibold text-white mb-2">
-                    Allocations:
-                  </Text>
-                  {result.allocation.map((a: any, i: number) => (
-                    <Text key={i} className="text-white">
-                      Row {a.row + 1}, Col {a.col + 1} → {a.amount}
-                    </Text>
-                  ))}
-                </>
-              )}
-              {result.totalCost !== undefined && (
-                <Text className="text-lg font-bold text-yellow-300 mt-4">
-                  Total Cost: {result.totalCost}
+  return (
+    <ScreenWrapper>
+      <ScrollView className="p-6 mt-28">
+        <Text className="text-3xl font-bold mb-4 text-[#000000]">Result</Text>
+
+        {!isObjectResult ? (
+          <Text className="text-[#000000] bg-black/40 p-4 rounded-md">{result}</Text>
+        ) : (
+          <View className="bg-black/40 p-4 rounded-md">
+            {r?.allocation && Array.isArray(r.allocation) && (
+              <>
+                <Text className="text-lg font-semibold text-[#000000] mb-2">
+                  Allocations:
                 </Text>
-              )}
-            </View>
-          )}
-          <BackButton />
-        </ScrollView>
-      </ScreenWrapper>
-    );
-  }
+                {r.allocation.map((a: any, i: number) => (
+                  <Text key={i} className="text-black">
+                    Row {a.row + 1}, Col {a.col + 1} → {a.amount}
+                  </Text>
+                ))}
+              </>
+            )}
+
+            {r?.totalCost !== undefined && (
+              <Text className="text-lg font-bold text-yellow-300 mt-4">
+                Total Cost: {r.totalCost}
+              </Text>
+            )}
+
+            {r?.totalProfit !== undefined && (
+              <Text className="text-lg font-bold text-green-300 mt-4">
+                Total Profit: {r.totalProfit}
+              </Text>
+            )}
+          </View>
+        )}
+        <BackButton />
+      </ScrollView>
+    </ScreenWrapper>
+  );
+}
+
 
   // --- FALLBACK: Loading ---
   return (
     <ScreenWrapper>
       <View className="flex-1 justify-center items-center p-6">
-        <Text className="text-lg text-white">Loading...</Text>
+        <Text className="text-lg text-[#0000000]">Loading...</Text>
         <BackButton />
       </View>
     </ScreenWrapper>

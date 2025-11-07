@@ -3,8 +3,8 @@ import { StyleSheet, ViewStyle, StyleProp, ImageBackground } from 'react-native'
 
 
 type ScreenWrapperProps = {
-  children: ReactNode;                  // React children type
-  style?: StyleProp<ViewStyle>;       // Optional style for View
+  children: ReactNode;                  
+  style?: StyleProp<ViewStyle>;       
 };
 
 const backgroundImage = require('../assets/images/bg.jpg');

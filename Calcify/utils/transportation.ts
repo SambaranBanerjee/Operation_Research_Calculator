@@ -222,13 +222,13 @@ function modiMethod(cost: number[][], supply: number[], demand: number[]): Solut
   const maxIterations = 100; // Prevent infinite loops
 
   while (iterationCount < maxIterations) {
-    // Step 1: Calculate u and v values
+    // Calculate u and v values
     const { u, v } = calculateUVValues(currentAllocation, cost, supply.length, demand.length);
     
-    // Step 2: Calculate reduced costs for all non-basic cells
+    // Calculate reduced costs for all non-basic cells
     const reducedCosts = calculateReducedCosts(cost, u, v, supply.length, demand.length);
     
-    // Step 3: Check for optimality (all reduced costs >= 0)
+    // Check for optimality (all reduced costs >= 0)
     const { hasNegative, enteringCell } = findEnteringCell(reducedCosts, currentAllocation);
     
     const currentIteration: MODIIteration = {
@@ -242,12 +242,12 @@ function modiMethod(cost: number[][], supply: number[], demand: number[]): Solut
     if (hasNegative && enteringCell) {
       currentIteration.enteringCell = enteringCell;
       
-      // Step 4: Find the loop and determine theta
+      // Find the loop and determine theta
       const loop = findLoop(currentAllocation, enteringCell.row, enteringCell.col);
       const theta = findTheta(currentAllocation, loop);
       currentIteration.theta = theta;
       
-      // Step 5: Update allocation
+      // Update allocation
       currentAllocation = updateAllocation(currentAllocation, loop, theta);
     } else {
       // Optimal solution found
@@ -364,15 +364,15 @@ function findLoop(
   startCol: number
 ): { row: number; col: number; type: 'plus' | 'minus' }[] {
   // This is a simplified implementation
-  // In a full implementation, you would need to find the complete loop
+  // In a full implementation, we would need to find the complete loop
   // using graph traversal algorithms
   
   const loop: { row: number; col: number; type: 'plus' | 'minus' }[] = [];
   
-  // Add the starting cell as plus
+  // Added the starting cell as plus
   loop.push({ row: startRow, col: startCol, type: 'plus' });
   
-  // Simplified: find basic cells in the same row and column
+  // Finding basic cells in the same row and column
   // This is a placeholder - a complete implementation would be more complex
   const basicCells = allocation.filter(alloc => alloc.amount > 0);
   
@@ -400,7 +400,7 @@ function findLoop(
 function findTheta(allocation: Allocation[], loop: { row: number; col: number; type: 'plus' | 'minus' }[]): number {
   let theta = Infinity;
   
-  // Find the minimum amount in the minus cells of the loop
+  // Finding the minimum amount in the minus cells of the loop
   for (const cell of loop) {
     if (cell.type === 'minus') {
       const alloc = allocation.find(a => a.row === cell.row && a.col === cell.col);
@@ -429,13 +429,13 @@ function updateAllocation(
       } else {
         newAllocation[index].amount -= theta;
         
-        // Remove cell if amount becomes zero
+        // Removing cell if amount becomes zero
         if (newAllocation[index].amount === 0) {
           newAllocation.splice(index, 1);
         }
       }
     } else if (cell.type === 'plus') {
-      // Add new basic cell
+      // Adding new basic cell
       newAllocation.push({ row: cell.row, col: cell.col, amount: theta });
     }
   }

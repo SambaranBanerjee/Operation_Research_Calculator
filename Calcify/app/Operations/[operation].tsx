@@ -1,58 +1,61 @@
-import { View, Text, Pressable, ScrollView } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useState, useEffect } from 'react';
-import { operations } from '@/utils/operations';
-import TransportationForm from '@/components/problems/TransportationForm';
-import { TransportationMethod } from '@/utils/transportation';
-import ScreenWrapper from '@/components/screenwrapper';
-
-type TransportationResult = {
-  allocation?: { row: number; col: number; amount: number }[];
-  totalCost?: number;
-  totalProfit?: number;
-  [key: string]: any;
-};
+// app/[operation].tsx
+import { View, Text, Pressable, ScrollView } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useState, useEffect } from "react";
+import { operations } from "@/utils/operations";
+import TransportationForm from "@/components/problems/TransportationForm";
+import LPPForm from "@/components/problems/LppForm";
+import ScreenWrapper from "@/components/screenwrapper";
 
 const Functions = () => {
   const { operation } = useLocalSearchParams<{ operation: string }>();
   const router = useRouter();
 
-  const [selectedMethod, setSelectedMethod] = useState<TransportationMethod | undefined>();
+  const [selectedMethod, setSelectedMethod] = useState<string | undefined>();
   const [result, setResult] = useState<any>(null);
   const [showForm, setShowForm] = useState(false);
   const [showResult, setShowResult] = useState(false);
 
-  // Load the operation when the screen opens
+  // Loading when operation changes
   useEffect(() => {
     if (!operation) return;
 
-    const opFunction = operations[operation as keyof typeof operations];
+    const opFunction: any = operations[operation as keyof typeof operations];
     if (!opFunction) {
-      setResult({ error: 'Operation not found' });
+      setResult({ error: "Operation not found" });
       return;
     }
 
-    // Initial call → returns prompt & available methods
-    const res = opFunction(undefined);
+    const res = opFunction();
     setResult(res);
     setShowForm(false);
     setShowResult(false);
   }, [operation]);
 
-  // Submit form data & compute result
-    const handleSubmit = (data: any) => {
-    const opFunction = operations[operation as keyof typeof operations];
+  // Handling form submission
+  const handleSubmit = (data: any) => {
+    const opFunction: any = operations[operation as keyof typeof operations];
     if (!opFunction) return;
 
-    const rawResult = opFunction(selectedMethod, data.cost, data.supply, data.demand);
+    let res: any;
 
-    // Make a mutable copy (safe even if it's a string)
-    const res: any = typeof rawResult === 'object' ? { ...rawResult } : rawResult;
-
-    // Adjust for profit mode
-    if (data.mode === 'maxProfit' && res && typeof res === 'object' && res.totalCost !== undefined) {
-      res.totalProfit = -res.totalCost;
-      delete res.totalCost;
+    if (operation === "linearProgrammingProblem") {
+      res = opFunction(
+        data.method,
+        data.numVars,
+        data.objective,
+        data.objectiveType === "max",
+        data.constraints
+      );
+    } else if (operation === "transportationProblem") {
+      res = opFunction(
+        selectedMethod,
+        data.cost,
+        data.supply,
+        data.demand
+      );
+    } else {
+      res = opFunction();
     }
 
     setResult(res);
@@ -60,8 +63,7 @@ const Functions = () => {
     setShowForm(false);
   };
 
-
-  // Back button logic
+  // Back navigation logic
   const handleBack = () => {
     if (showResult) {
       setShowResult(false);
@@ -74,7 +76,6 @@ const Functions = () => {
     }
   };
 
-  // --- Reusable Back Button ---
   const BackButton = () => (
     <Pressable
       onPress={handleBack}
@@ -84,23 +85,24 @@ const Functions = () => {
     </Pressable>
   );
 
-  // Choose Method 
   if (
     result &&
-    typeof result === 'object' &&
-    'prompt' in result &&
-    'methods' in result &&
+    typeof result === "object" &&
+    "prompt" in result &&
+    "methods" in result &&
     !showForm &&
     !showResult
   ) {
     return (
       <ScreenWrapper>
         <ScrollView className="p-6 mt-28">
-          <Text className="text-3xl font-bold mb-6 capitalize text-[#000000]">
-            {operation?.replace(/([A-Z])/g, ' $1')}
+          <Text className="text-3xl font-bold mb-6 capitalize text-black">
+            {operation?.replace(/([A-Z])/g, " $1")}
           </Text>
-          <Text className="text-lg mb-6 text-[#000000]">{result.prompt}</Text>
-          {result.methods.map((method: { key: TransportationMethod; label: string }) => (
+
+          <Text className="text-lg mb-6 text-black">{result.prompt}</Text>
+
+          {result.methods.map((method: { key: string; label: string }) => (
             <Pressable
               key={method.key}
               className="bg-blue-600 rounded-md p-4 mb-4"
@@ -109,89 +111,63 @@ const Functions = () => {
                 setShowForm(true);
               }}
             >
-              <Text className="text-white text-center text-lg">{method.label}</Text>
+              <Text className="text-white text-center text-lg">
+                {method.label}
+              </Text>
             </Pressable>
           ))}
+
           <BackButton />
         </ScrollView>
       </ScreenWrapper>
     );
   }
 
-  // Show Transportation Form 
+  // Showing the form
   if (showForm) {
-    if (operation === 'transportationProblem') {
+    if (operation === "transportationProblem") {
       return (
         <ScreenWrapper>
           <TransportationForm onBack={handleBack} onSubmit={handleSubmit} />
         </ScreenWrapper>
       );
-    } else {
+    } else if (operation === "linearProgrammingProblem") {
       return (
         <ScreenWrapper>
-          <ScrollView className="p-6 mt-32">
-            <Text className="text-[#000000] text-lg">
-              Input form not yet implemented for this operation.
-            </Text>
-            <BackButton />
-          </ScrollView>
+          <LPPForm
+            selectedMethod={selectedMethod}
+            onBack={handleBack}
+            onSubmit={handleSubmit}
+          />
         </ScreenWrapper>
       );
     }
   }
 
-  // Show Result 
+  // Showing the result
   if (showResult && result) {
-  const isObjectResult = typeof result === 'object' && result !== null;
-  const r = isObjectResult ? (result as TransportationResult) : null;
+    return (
+      <ScreenWrapper>
+        <ScrollView className="p-6 mt-28">
+          <Text className="text-3xl font-bold mb-4 text-black">Result</Text>
 
-  return (
-    <ScreenWrapper>
-      <ScrollView className="p-6 mt-28">
-        <Text className="text-3xl font-bold mb-4 text-[#000000]">Result</Text>
+          <Text className="text-black bg-gray-100 p-4 rounded-md">
+            {typeof result === "object"
+              ? JSON.stringify(result, null, 2)
+              : String(result)}
+          </Text>
 
-        {!isObjectResult ? (
-          <Text className="text-[#000000] bg-black/40 p-4 rounded-md">{result}</Text>
-        ) : (
-          <View className="bg-black/40 p-4 rounded-md">
-            {r?.allocation && Array.isArray(r.allocation) && (
-              <>
-                <Text className="text-lg font-semibold text-[#000000] mb-2">
-                  Allocations:
-                </Text>
-                {r.allocation.map((a: any, i: number) => (
-                  <Text key={i} className="text-black">
-                    Row {a.row + 1}, Col {a.col + 1} → {a.amount}
-                  </Text>
-                ))}
-              </>
-            )}
+          <BackButton />
+        </ScrollView>
+      </ScreenWrapper>
+    );
+  }
 
-            {r?.totalCost !== undefined && (
-              <Text className="text-lg font-bold text-yellow-300 mt-4">
-                Total Cost: {r.totalCost}
-              </Text>
-            )}
-
-            {r?.totalProfit !== undefined && (
-              <Text className="text-lg font-bold text-green-300 mt-4">
-                Total Profit: {r.totalProfit}
-              </Text>
-            )}
-          </View>
-        )}
-        <BackButton />
-      </ScrollView>
-    </ScreenWrapper>
-  );
-}
-
-
-  // --- FALLBACK: Loading ---
+  // Fallback System in case of loading or no operation
   return (
     <ScreenWrapper>
       <View className="flex-1 justify-center items-center p-6">
-        <Text className="text-lg text-[#0000000]">Loading...</Text>
+        <Text className="text-lg text-black">Loading...</Text>
         <BackButton />
       </View>
     </ScreenWrapper>

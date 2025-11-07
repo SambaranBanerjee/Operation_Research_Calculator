@@ -37,7 +37,6 @@ const TransportationForm: React.FC<TransportationFormProps> = ({ onBack, onSubmi
       return;
     }
 
-    // If maximizing profit → convert profit matrix to cost matrix by negating
     const transformedCost =
       mode === 'maxProfit' ? cost.map(row => row.map(value => -value)) : cost;
 
@@ -103,7 +102,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({ onBack, onSubmi
         </ScrollView>
       </View>
 
-      {/* Supply Inputs */}
+      {/* Supplying Inputs */}
       <View className="mt-6">
         <Text className="text-lg font-semibold mb-2 text-[#000000]">Supply</Text>
         <View className="flex-row flex-wrap">
@@ -124,7 +123,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({ onBack, onSubmi
         </View>
       </View>
 
-      {/* Demand Inputs */}
+      {/* Demanding Inputs */}
       <View className="mt-6">
         <Text className="text-lg font-semibold mb-2 text-[#000000]">Demand</Text>
         <View className="flex-row flex-wrap">

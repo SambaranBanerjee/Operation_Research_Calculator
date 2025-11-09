@@ -1,6 +1,6 @@
 import type { TransportationMethod } from "./transportation";
 import { transportationProblem } from "./transportation";
-import { solveSimplex, solveGraphical, LPInput } from "./linearProgramming";
+import { solveGraphical, LPInput } from "./linearProgramming";
 
 export const operations = {
   transportationProblem: (
@@ -24,7 +24,6 @@ export const operations = {
         prompt: "Choose a method to solve the Linear Programming Problem:",
         methods: [
           { key: "graph", label: "Graphical Method (2 vars only)" },
-          { key: "simplex", label: "Simplex Method" },
         ],
       };
     }
@@ -38,7 +37,6 @@ export const operations = {
 
     // Deciding the method
     if (method === "graph") return solveGraphical(input);
-    return solveSimplex(input);
   },
 
   assignmentProblem: () => "Return of Assignment Problem",

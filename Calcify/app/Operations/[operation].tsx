@@ -6,6 +6,7 @@ import { operations } from "@/utils/operations";
 import TransportationForm from "@/components/problems/TransportationForm";
 import LPPForm from "@/components/problems/LppForm";
 import ScreenWrapper from "@/components/screenwrapper";
+import GraphicalLPPlot from "@/components/problems/GraphicalLPPlot";
 
 const Functions = () => {
   const { operation } = useLocalSearchParams<{ operation: string }>();
@@ -151,11 +152,28 @@ const Functions = () => {
         <ScrollView className="p-6 mt-28">
           <Text className="text-3xl font-bold mb-4 text-black">Result</Text>
 
-          <Text className="text-black bg-gray-100 p-4 rounded-md">
-            {typeof result === "object"
-              ? JSON.stringify(result, null, 2)
-              : String(result)}
-          </Text>
+          {result.method === "Graphical Method" ? (
+            <>
+              <Text className="text-xl font-semibold mb-2 text-black">
+                {result.objectiveType} Result
+              </Text>
+              <Text className="text-black mb-2">
+                Best Solution: ({result.bestSolution.point[0].toFixed(2)}, {result.bestSolution.point[1].toFixed(2)})
+              </Text>
+              <Text className="text-black mb-4">
+                Objective Value: {result.bestSolution.value.toFixed(2)}
+              </Text>
+
+              {result.plotData && <GraphicalLPPlot plotData={result.plotData} />}
+            </>
+          ) : (
+            <Text className="text-black bg-gray-100 p-4 rounded-md">
+              {typeof result === "object"
+                ? JSON.stringify(result, null, 2)
+                : String(result)}
+            </Text>
+          )}
+
 
           <BackButton />
         </ScrollView>

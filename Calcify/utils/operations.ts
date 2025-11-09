@@ -1,6 +1,7 @@
 import type { TransportationMethod } from "./transportation";
 import { transportationProblem } from "./transportation";
 import { solveGraphical, LPInput } from "./linearProgramming";
+import { assignmentProblem } from "./assignment";
 
 export const operations = {
   transportationProblem: (
@@ -39,7 +40,20 @@ export const operations = {
     if (method === "graph") return solveGraphical(input);
   },
 
-  assignmentProblem: () => "Return of Assignment Problem",
+  assignmentProblem: (
+    numAgents?: number,
+    numTasks?: number,
+    costMatrix?: number[][]
+  ) => {
+    if (!costMatrix) {
+      return {
+        prompt: "Enter the cost matrix for the Assignment Problem:",
+        methods: [{ key: "assignment", label: "Hungarian Method" }],
+      };
+    }
+
+    return assignmentProblem(numAgents ?? 0, numTasks ?? 0, costMatrix);
+  },
 
   networkFlowProblem: () => "Return of Network Flow Problem",
 };

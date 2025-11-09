@@ -7,6 +7,7 @@ import TransportationForm from "@/components/problems/TransportationForm";
 import LPPForm from "@/components/problems/LppForm";
 import ScreenWrapper from "@/components/screenwrapper";
 import GraphicalLPPlot from "@/components/problems/GraphicalLPPlot";
+import AssignmentForm from "@/components/problems/AssignmentForm";
 
 const Functions = () => {
   const { operation } = useLocalSearchParams<{ operation: string }>();
@@ -55,6 +56,8 @@ const Functions = () => {
         data.supply,
         data.demand
       );
+    } else if (operation === "assignmentProblem") {
+      res = opFunction(data.numAgents, data.numTasks, data.costMatrix);
     } else {
       res = opFunction();
     }
@@ -142,6 +145,12 @@ const Functions = () => {
           />
         </ScreenWrapper>
       );
+    } else if (operation === "assignmentProblem") {
+      return (
+        <ScreenWrapper>
+          <AssignmentForm onBack={handleBack} onSubmit={handleSubmit} />
+        </ScreenWrapper>
+      );
     }
   }
 
@@ -166,6 +175,43 @@ const Functions = () => {
 
               {result.plotData && <GraphicalLPPlot plotData={result.plotData} />}
             </>
+          ) : operation === "assignmentProblem" ? (
+            <View className="bg-white rounded-2xl shadow p-4 mb-6">
+              <Text className="text-2xl font-bold text-center mb-4 text-blue-700">
+                🧮 Assignment Problem Solution
+              </Text>
+
+              {/* Show assignment pairs */}
+              {result.assignment?.map((task: number, i: number) => (
+                <View
+                  key={i}
+                  className="flex-row justify-between bg-gray-100 rounded-md p-3 mb-2"
+                >
+                  <Text className="text-black text-lg font-semibold">
+                    👷 Agent {i + 1}
+                  </Text>
+                  <Text className="text-black text-lg">
+                    ➜ Task {task + 1 >= 1 ? task + 1 : "— (Dummy)"}
+                  </Text>
+                </View>
+              ))}
+
+              {/* Total cost */}
+              <Text className="text-xl font-bold text-green-700 mt-4 text-center">
+                💰 Minimum Total Cost: {result.totalCost.toFixed(2)}
+              </Text>
+
+              {/* Perfect assignment status */}
+              <Text
+                className={`text-center mt-2 ${
+                  result.isPerfect ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {result.isPerfect
+                  ? "✅ Perfect Assignment Achieved"
+                  : "⚠️ Some agents assigned to dummy tasks"}
+              </Text>
+            </View>
           ) : (
             <Text className="text-black bg-gray-100 p-4 rounded-md">
               {typeof result === "object"
@@ -173,8 +219,6 @@ const Functions = () => {
                 : String(result)}
             </Text>
           )}
-
-
           <BackButton />
         </ScrollView>
       </ScreenWrapper>

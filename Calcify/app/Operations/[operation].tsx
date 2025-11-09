@@ -9,6 +9,7 @@ import ScreenWrapper from "@/components/screenwrapper";
 import GraphicalLPPlot from "@/components/problems/GraphicalLPPlot";
 import AssignmentForm from "@/components/problems/AssignmentForm";
 import NetworkFlowForm from "@/components/problems/NetworkFlowForm";
+//import { NetworkFlowVisualizer } from "@/components/networkVisualizer";
 
 const Functions = () => {
   const { operation } = useLocalSearchParams<{ operation: string }>();
@@ -222,32 +223,109 @@ const Functions = () => {
               </Text>
             </View>
           ) : operation === "networkFlowProblem" ? (
-            <View className="bg-white rounded-2xl shadow p-4 mb-6">
+            <View className="bg-white rounded-2xl shadow p-6 mb-8">
               <Text className="text-2xl font-bold text-center mb-4 text-blue-700">
                 🌐 Network Flow Result
               </Text>
-              <Text className="text-black text-center mb-3">{result.message}</Text>
+
+              <Text className="text-black text-center mb-4 text-base">
+                {result.message}
+              </Text>
 
               {result.isCyclic ? (
-                <Text className="text-red-600 text-center">
-                  ❌ The network contains a cycle. Cannot compute order.
-                </Text>
+                <View className="bg-red-100 border border-red-400 rounded-xl p-4">
+                  <Text className="text-red-700 text-center font-semibold text-lg">
+                    ❌ The network contains a cycle.
+                  </Text>
+                  <Text className="text-red-600 text-center">
+                    Please revise dependencies to form a Directed Acyclic Graph.
+                  </Text>
+                </View>
               ) : (
                 <>
-                  <Text className="text-lg font-semibold text-black mb-2">Topological Order:</Text>
-                  <Text className="text-black mb-4 bg-gray-100 rounded-md p-3 text-center">
-                    {result.topologicalOrder?.join(" → ")}
-                  </Text>
+                  {/* Topological Order */}
+                  <View className="bg-blue-50 rounded-xl p-4 mb-6 border border-blue-200">
+                    <Text className="text-lg font-semibold text-blue-700 mb-2 text-center">
+                      🔁 Topological Order
+                    </Text>
+                    <View className="flex-row flex-wrap justify-center">
+                      {result.topologicalOrder?.map((node: string, idx: number) => (
+                        <View key={node} className="flex-row items-center mb-2">
+                          <View className="bg-blue-600 rounded-full px-3 py-1 mx-1">
+                            <Text className="text-white font-bold">{node}</Text>
+                          </View>
+                          {idx < result.topologicalOrder.length - 1 && (
+                            <Text className="text-blue-600 text-lg mx-1">→</Text>
+                          )}
+                        </View>
+                      ))}
+                    </View>
+                  </View>
 
-                  <Text className="text-lg font-semibold text-black mb-2">Adjacency List:</Text>
-                  <Text className="text-black bg-gray-100 rounded-md p-3">
-                    {JSON.stringify(result.adjacencyList, null, 2)}
-                  </Text>
+                  {/* Adjacency List */}
+                  <View className="bg-green-50 rounded-xl p-4 mb-6 border border-green-200">
+                    <Text className="text-lg font-semibold text-green-700 mb-2 text-center">
+                      🧩 Adjacency List
+                    </Text>
+                    {Object.entries(result.adjacencyList).map(([node, edges]) => {
+                      const successors = edges as string[];
+                      return (
+                        <View
+                          key={node}
+                          className="flex-row justify-between bg-white rounded-lg shadow-sm px-4 py-2 mb-2"
+                        >
+                          <Text className="text-black font-semibold">{node}</Text>
+                          <Text className="text-gray-700">
+                            → {successors.length ? successors.join(", ") : "∅"}
+                          </Text>
+                        </View>
+                      );
+                    })}
 
-                  <Text className="text-lg font-semibold text-black mt-4 mb-2">Visualization Data:</Text>
-                  <Text className="text-black bg-gray-50 rounded-md p-3">
-                    {JSON.stringify(result.visualNodes, null, 2)}
-                  </Text>
+                    {/* 🧭 Visual Network Graph */}
+                    {/*<View className="mt-6 items-center">
+                      <Text className="text-lg font-semibold text-green-700 mb-2 text-center">
+                        🔗 Network Graph Visualization
+                      </Text>
+                      <NetworkFlowVisualizer adjacencyList={result.adjacencyList} />
+                    </View>*/}
+                  </View>
+
+                  {/* Visual Edges */}
+                  <View className="bg-yellow-50 rounded-xl p-4 mb-6 border border-yellow-200">
+                    <Text className="text-lg font-semibold text-yellow-700 mb-3 text-center">
+                      🕸️ Edges
+                    </Text>
+                    {result.visualEdges?.map((edge: any, idx: number) => (
+                      <Text key={idx} className="text-black text-center mb-1">
+                        {edge.from} → {edge.to}
+                      </Text>
+                    ))}
+                  </View>
+
+                  {/* Visual Nodes with Coordinates */}
+                  <View className="bg-purple-50 rounded-xl p-4 border border-purple-200">
+                    <Text className="text-lg font-semibold text-purple-700 mb-3 text-center">
+                      📍 Node Positions
+                    </Text>
+                    <View className="flex-row justify-between mb-2 px-2">
+                      <Text className="font-bold text-black w-1/4 text-left">Node</Text>
+                      <Text className="font-bold text-black w-1/4 text-center">X</Text>
+                      <Text className="font-bold text-black w-1/4 text-center">Y</Text>
+                    </View>
+                    {result.visualNodes?.map((n: any) => (
+                      <View
+                        key={n.id}
+                        className="flex-row justify-between bg-white rounded-md shadow-sm p-2 mb-1"
+                      >
+                        <Text className="text-black w-1/4 text-left font-semibold">
+                          {n.id}
+                        </Text>
+                        <Text className="text-black w-1/4 text-center">{n.x}</Text>
+                        <Text className="text-black w-1/4 text-center">{n.y}</Text>
+                      </View>
+                    ))}
+                  </View>
                 </>
               )}
             </View>

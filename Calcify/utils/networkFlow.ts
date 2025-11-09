@@ -38,7 +38,7 @@ export const networkFlow = (activities: NetworkNode[]): NetworkFlowResult => {
   const visited: Record<string, boolean> = {};
   const recStack: Record<string, boolean> = {};
   const topologicalOrder: string[] = [];
-  let isCyclic = false;
+  //let isCyclic = false;
 
   const dfs = (node: string) => {
     visited[node] = true;
@@ -46,7 +46,7 @@ export const networkFlow = (activities: NetworkNode[]): NetworkFlowResult => {
 
     for (const neighbor of adjacencyList[node] || []) {
       if (!visited[neighbor]) dfs(neighbor);
-      else if (recStack[neighbor]) isCyclic = true;
+      //else if (recStack[neighbor]) isCyclic = true;
     }
 
     recStack[node] = false;
@@ -57,13 +57,13 @@ export const networkFlow = (activities: NetworkNode[]): NetworkFlowResult => {
     if (!visited[node]) dfs(node);
   }
 
-  if (isCyclic) {
+  /*if (isCyclic) {
     return {
       isCyclic: true,
       adjacencyList,
       message: "❌ The network contains a cycle. Fix dependencies.",
     };
-  }
+  }*/
 
   // Simple visual coordinates generator (horizontal layers)
   const visualNodes: VisualNode[] = [];

@@ -2,6 +2,7 @@ import type { TransportationMethod } from "./transportation";
 import { transportationProblem } from "./transportation";
 import { solveGraphical, LPInput } from "./linearProgramming";
 import { assignmentProblem } from "./assignment";
+import { networkFlow } from "./networkFlow";
 
 export const operations = {
   transportationProblem: (
@@ -55,5 +56,13 @@ export const operations = {
     return assignmentProblem(numAgents ?? 0, numTasks ?? 0, costMatrix);
   },
 
-  networkFlowProblem: () => "Return of Network Flow Problem",
+  networkFlowProblem: (activities?: { activity: string; predecessors: string[] }[]) => {
+    if (!activities) {
+      return {
+        prompt: "Enter the list of activities and their predecessors:",
+        methods: [{ key: "network", label: "Activity Precedence Method" }],
+      };
+    }
+    return networkFlow(activities);
+  },
 };

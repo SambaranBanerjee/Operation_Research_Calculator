@@ -8,6 +8,7 @@ import LPPForm from "@/components/problems/LppForm";
 import ScreenWrapper from "@/components/screenwrapper";
 import GraphicalLPPlot from "@/components/problems/GraphicalLPPlot";
 import AssignmentForm from "@/components/problems/AssignmentForm";
+import NetworkFlowForm from "@/components/problems/NetworkFlowForm";
 
 const Functions = () => {
   const { operation } = useLocalSearchParams<{ operation: string }>();
@@ -58,6 +59,8 @@ const Functions = () => {
       );
     } else if (operation === "assignmentProblem") {
       res = opFunction(data.numAgents, data.numTasks, data.costMatrix);
+    } else if (operation === "networkFlowProblem"){
+      res = opFunction(data.activities);
     } else {
       res = opFunction();
     }
@@ -151,6 +154,12 @@ const Functions = () => {
           <AssignmentForm onBack={handleBack} onSubmit={handleSubmit} />
         </ScreenWrapper>
       );
+    } else if (operation === "networkFlowProblem") {
+      return (
+        <ScreenWrapper>
+          <NetworkFlowForm onBack={handleBack} onSubmit={handleSubmit} />
+        </ScreenWrapper>
+      )
     }
   }
 
@@ -212,13 +221,43 @@ const Functions = () => {
                   : "⚠️ Some agents assigned to dummy tasks"}
               </Text>
             </View>
-          ) : (
-            <Text className="text-black bg-gray-100 p-4 rounded-md">
-              {typeof result === "object"
-                ? JSON.stringify(result, null, 2)
-                : String(result)}
-            </Text>
-          )}
+          ) : operation === "networkFlowProblem" ? (
+            <View className="bg-white rounded-2xl shadow p-4 mb-6">
+              <Text className="text-2xl font-bold text-center mb-4 text-blue-700">
+                🌐 Network Flow Result
+              </Text>
+              <Text className="text-black text-center mb-3">{result.message}</Text>
+
+              {result.isCyclic ? (
+                <Text className="text-red-600 text-center">
+                  ❌ The network contains a cycle. Cannot compute order.
+                </Text>
+              ) : (
+                <>
+                  <Text className="text-lg font-semibold text-black mb-2">Topological Order:</Text>
+                  <Text className="text-black mb-4 bg-gray-100 rounded-md p-3 text-center">
+                    {result.topologicalOrder?.join(" → ")}
+                  </Text>
+
+                  <Text className="text-lg font-semibold text-black mb-2">Adjacency List:</Text>
+                  <Text className="text-black bg-gray-100 rounded-md p-3">
+                    {JSON.stringify(result.adjacencyList, null, 2)}
+                  </Text>
+
+                  <Text className="text-lg font-semibold text-black mt-4 mb-2">Visualization Data:</Text>
+                  <Text className="text-black bg-gray-50 rounded-md p-3">
+                    {JSON.stringify(result.visualNodes, null, 2)}
+                  </Text>
+                </>
+              )}
+            </View>
+            ) : (
+              <Text className="text-black bg-gray-100 p-4 rounded-md">
+                {typeof result === "object"
+                  ? JSON.stringify(result, null, 2)
+                  : String(result)}
+              </Text>
+            )}
           <BackButton />
         </ScrollView>
       </ScreenWrapper>

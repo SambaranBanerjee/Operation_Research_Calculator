@@ -33,7 +33,7 @@ const SearchBar = () => {
   return (
     <View className="flex-1 p-2 mt-2">
       <TextInput
-        className="h-10 text-white border border-gray-400 mb-5 px-3 py-2 rounded"
+        className="h-10 text-black border border-gray-400 mb-5 px-3 py-2 rounded"
         placeholder="Search..."
         value={searchQuery}
         onChangeText={handleSearch}

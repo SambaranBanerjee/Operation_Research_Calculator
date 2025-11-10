@@ -24,7 +24,7 @@ export default function Index() {
       </Text>
       <SearchBar />
       </View>
-  </ScreenWrapper>
-);
+    </ScreenWrapper>
+  );
 }
 

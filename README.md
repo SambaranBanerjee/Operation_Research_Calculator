@@ -1,5 +1,4 @@
-# Operation_Research_Calculator
-🧮 Calcify
+# 🧮 Calcify
 
 Calcify is a modern, cross-platform Operations Research Calculator App built with React Native + Expo.
 It helps students and professionals solve complex Linear Programming, Transportation, Assignment, and Network Flow problems with intuitive inputs, visualizations, and AI-like explanations — all in one app.

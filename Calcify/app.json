@@ -2,6 +2,7 @@
   "expo": {
     "name": "Calcify",
     "slug": "Calcify",
+    "icon": "./assets/images/Calcify_logo.png",
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "calcify",
@@ -16,11 +17,17 @@
     },
     "android": {
       "adaptiveIcon": {
+        "foregroundImage": "./assets/images/Calcify_logo.png",
         "backgroundColor": "#E6F4FE"
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.sambaran20.Calcify"
+    },
+    "splash": {
+      "image": "./assets/images/Calcify_logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#E6F4FE"
     },
     "web": {
       "output": "static"

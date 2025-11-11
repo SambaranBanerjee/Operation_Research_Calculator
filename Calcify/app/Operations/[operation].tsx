@@ -185,6 +185,125 @@ const Functions = () => {
 
               {result.plotData && <GraphicalLPPlot plotData={result.plotData} />}
             </>
+          ) : operation === "transportationProblem" ? (
+          <View className="bg-white rounded-2xl shadow p-6 mb-8">
+            <Text className="text-2xl font-bold text-center mb-4 text-blue-700">
+              🚚 Transportation Problem Solution
+            </Text>
+
+            {/* Method used */}
+            <Text className="text-lg text-center text-gray-700 mb-2">
+              Method Used: <Text className="font-semibold text-black">{result.method}</Text>
+            </Text>
+
+            {/* Total cost */}
+            <Text className="text-xl font-bold text-green-700 text-center mb-4">
+              💰 Minimum Total Transportation Cost: {result.totalCost?.toFixed(2) ?? "N/A"}
+            </Text>
+
+            {/* Allocation Table */}
+            <View className="bg-blue-50 rounded-xl p-4 mb-6 border border-blue-200">
+              <Text className="text-lg font-semibold text-blue-700 mb-2 text-center">
+                🧾 Optimal Allocation Table
+              </Text>
+
+              {result.allocation && result.costMatrix ? (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <View>
+                    {/* Header Row */}
+                    <View className="flex-row border-b border-blue-300 mb-1">
+                      <View className="w-20 justify-center items-center p-2 bg-blue-100 rounded-l-md">
+                        <Text className="font-bold text-blue-800">From ↓ / To →</Text>
+                      </View>
+                      {result.costMatrix[0].map((_: any, j: number) => (
+                        <View
+                          key={`head-${j}`}
+                          className="w-20 justify-center items-center bg-blue-100 p-2"
+                        >
+                          <Text className="font-bold text-blue-800">D{j + 1}</Text>
+                        </View>
+                      ))}
+                      <View className="w-24 justify-center items-center bg-blue-100 p-2 rounded-r-md">
+                        <Text className="font-bold text-blue-800">Supply</Text>
+                      </View>
+                    </View>
+
+                    {/* Rows */}
+                    {result.allocation.map((row: any[], i: number) => (
+                      <View
+                        key={`row-${i}`}
+                        className="flex-row mb-1 bg-white rounded-md shadow-sm"
+                      >
+                        <View className="w-20 justify-center items-center p-2 bg-blue-50 rounded-l-md">
+                          <Text className="font-bold text-black">A{i + 1}</Text>
+                        </View>
+                        {row.map((alloc: number, j: number) => (
+                          <View
+                            key={`cell-${i}-${j}`}
+                            className={`w-20 justify-center items-center p-2 ${
+                              alloc > 0 ? "bg-green-100 border border-green-300" : "bg-gray-50"
+                            }`}
+                          >
+                            <Text className="text-black">
+                              {alloc > 0
+                                ? `${alloc} (${result.costMatrix[i][j]})`
+                                : "-"}
+                            </Text>
+                          </View>
+                        ))}
+                        <View className="w-24 justify-center items-center p-2 bg-blue-50 rounded-r-md">
+                          <Text className="font-semibold text-black">
+                            {result.supply?.[i] ?? "-"}
+                          </Text>
+                        </View>
+                      </View>
+                    ))}
+
+                    {/* Demand Row */}
+                    <View className="flex-row bg-blue-100 rounded-md mt-1">
+                      <View className="w-20 justify-center items-center p-2 rounded-l-md">
+                        <Text className="font-bold text-blue-800">Demand</Text>
+                      </View>
+                      {result.demand?.map((d: number, j: number) => (
+                        <View
+                          key={`demand-${j}`}
+                          className="w-20 justify-center items-center p-2"
+                        >
+                          <Text className="font-semibold text-black">{d}</Text>
+                        </View>
+                      ))}
+                      <View className="w-24 p-2 rounded-r-md" />
+                    </View>
+                  </View>
+                </ScrollView>
+              ) : (
+                <Text className="text-center text-gray-500 italic">
+                  No allocation data available.
+                </Text>
+              )}
+            </View>
+
+            {/* Feasibility / Optimization Notes */}
+            <View className="bg-yellow-50 rounded-xl p-4 border border-yellow-200">
+              <Text className="text-lg font-semibold text-yellow-700 mb-2 text-center">
+                🧠 Optimization Notes
+              </Text>
+              {result.isBalanced ? (
+                <Text className="text-green-700 text-center">
+                  ✅ The problem is balanced. Supply equals demand.
+                </Text>
+              ) : (
+                <Text className="text-red-700 text-center">
+                  ⚠️ The problem was unbalanced — dummy source or destination added.
+                </Text>
+              )}
+              {result.method === "MODI" && (
+                <Text className="text-gray-800 text-center mt-2">
+                  🔍 The solution was optimized using the <Text className="font-semibold">MODI Method</Text>.
+                </Text>
+              )}
+            </View>
+          </View>
           ) : operation === "assignmentProblem" ? (
             <View className="bg-white rounded-2xl shadow p-4 mb-6">
               <Text className="text-2xl font-bold text-center mb-4 text-blue-700">

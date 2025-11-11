@@ -105,10 +105,6 @@ const LPPForm: React.FC<LPPFormProps> = ({ onBack, onSubmit, selectedMethod }) =
           />
         ))}
 
-        <Pressable className="bg-green-600 p-3 rounded-md mb-4" onPress={addConstraint}>
-          <Text className="text-center text-white">Add Constraint</Text>
-        </Pressable>
-
         {constraints.map((constraint, idx) => (
           <View key={idx} className="bg-gray-200 p-3 rounded-md mb-3">
             <Text className="text-black mb-2">Constraint {idx + 1}</Text>
@@ -158,6 +154,10 @@ const LPPForm: React.FC<LPPFormProps> = ({ onBack, onSubmit, selectedMethod }) =
           </View>
         ))}
 
+        <Pressable className="bg-green-600 p-3 rounded-md mb-4" onPress={addConstraint}>
+          <Text className="text-center text-white">Add Constraint</Text>
+        </Pressable>
+        
         {message && <Text className="text-red-500 text-center mb-4">{message}</Text>}
 
         <Pressable className="bg-blue-600 p-3 rounded-md mt-4" onPress={handleSubmit}>

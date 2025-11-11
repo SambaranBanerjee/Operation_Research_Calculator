@@ -28,7 +28,7 @@ const LPPForm: React.FC<LPPFormProps> = ({ onBack, onSubmit, selectedMethod }) =
   const addConstraint = () => {
     setConstraints([
       ...constraints,
-      { coeffs: Array(numVars).fill(0), type: "<=", rhs: 0 },
+      { coeffs: Array(numVars).fill(0), type: ">=", rhs: 0 },
     ]);
   };
 
@@ -56,9 +56,11 @@ const LPPForm: React.FC<LPPFormProps> = ({ onBack, onSubmit, selectedMethod }) =
 
         <Text className="text-lg text-black mb-2">Number of Variables:</Text>
         <TextInput
-          className="bg-white rounded-md p-3 mb-4"
+          className="bg-white text-black rounded-md p-3 mb-4 border border-gray-400"
           keyboardType="numeric"
           value={String(numVars)}
+          placeholder="Enter number of variables"
+          placeholderTextColor="#000000"
           onChangeText={(t) => {
             const newVal = Number(t) || 0;
             setNumVars(newVal);
@@ -91,9 +93,10 @@ const LPPForm: React.FC<LPPFormProps> = ({ onBack, onSubmit, selectedMethod }) =
         {Array.from({ length: numVars }).map((_, i) => (
           <TextInput
             key={i}
-            className="bg-white rounded-md p-3 mb-2"
+            className="bg-white text-black rounded-md p-3 mb-2 border border-gray-400"
             keyboardType="numeric"
             placeholder={`x${i + 1}`}
+            placeholderTextColor="#000000"
             value={String(objective[i])}
             onChangeText={(t) =>
               setObjective((prev) => {
@@ -112,9 +115,10 @@ const LPPForm: React.FC<LPPFormProps> = ({ onBack, onSubmit, selectedMethod }) =
             {constraint.coeffs.map((c, j) => (
               <TextInput
                 key={j}
-                className="bg-white rounded-md p-2 mb-2"
+                className="bg-white text-black rounded-md p-2 mb-2 border border-gray-400"
                 keyboardType="numeric"
                 placeholder={`Coeff for x${j + 1}`}
+                placeholderTextColor="#000000"
                 value={String(c)}
                 onChangeText={(t) => {
                   const newConstraints = [...constraints];
@@ -124,8 +128,8 @@ const LPPForm: React.FC<LPPFormProps> = ({ onBack, onSubmit, selectedMethod }) =
               />
             ))}
 
-            {/* ✅ Dropdown for constraint type */}
-            <View className="bg-white rounded-md mb-2">
+            {/* ✅ Fixed Dropdown for constraint type */}
+            <View className="bg-white rounded-md mb-2 border border-gray-400">
               <Picker
                 selectedValue={constraint.type}
                 onValueChange={(value) => {
@@ -133,17 +137,20 @@ const LPPForm: React.FC<LPPFormProps> = ({ onBack, onSubmit, selectedMethod }) =
                   newConstraints[idx].type = value as "<=" | ">=" | "=";
                   setConstraints(newConstraints);
                 }}
+                style={{ color: '#000000' }}
+                dropdownIconColor="#000000"
               >
-                <Picker.Item label="≤ (Less than or equal)" value="<=" />
-                <Picker.Item label="≥ (Greater than or equal)" value=">=" />
-                <Picker.Item label="= (Equal)" value="=" />
+                <Picker.Item label="≤ (Less than or equal)" value="<=" color="#000000"/>
+                <Picker.Item label="≥ (Greater than or equal)" value=">=" color="#000000" />
+                <Picker.Item label="= (Equal)" value="=" color="#000000" />
               </Picker>
             </View>
 
             <TextInput
-              className="bg-white rounded-md p-2"
+              className="bg-white text-black rounded-md p-2 border border-gray-400"
               keyboardType="numeric"
               placeholder="Right-hand side"
+              placeholderTextColor="#000000"
               value={String(constraint.rhs)}
               onChangeText={(t) => {
                 const newConstraints = [...constraints];

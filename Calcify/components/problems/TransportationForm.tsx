@@ -71,7 +71,7 @@ const TransportationForm: React.FC<TransportationFormProps> = ({ onBack, onSubmi
           <View className="flex-1 ml-2">
             <Text className="text-lg mb-1 text-[#000000]">Columns</Text>
             <TextInput
-              className="border border-gray-400 rounded-md p-2 text-center bg-white"
+              className="border border-gray-400 rounded-md p-2 text-center text-[#000000] bg-white"
               placeholder="e.g. 4"
               keyboardType="numeric"
               onChangeText={(text) =>

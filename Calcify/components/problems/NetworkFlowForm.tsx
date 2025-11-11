@@ -57,19 +57,20 @@ const NetworkFlowForm: React.FC<NetworkFlowFormProps> = ({ onBack, onSubmit}) =>
                         <Text className="text-lg font-semibold mb-2 text-black">Activity {i + 1}</Text>
 
                         <TextInput
-                            placeholder="Enter Activity Name (e.g., A)"
                             className="border border-gray-400 rounded-md p-2 mb-3 text-black"
+                            placeholder="Enter Activity Name (e.g., A)"
+                            placeholderTextColor="#000000"
                             value={item.activity}
                             onChangeText={(text) => handleChange(i, "activity", text)}
                         />
 
                         <TextInput
-                            placeholder="Predecessors (comma-separated, e.g., A,B)"
                             className="border border-gray-400 rounded-md p-2 mb-3 text-black"
+                            placeholder="Predecessors (comma-separated, e.g., A,B)"
+                            placeholderTextColor="#000000"
                             value={item.predecessors}
                             onChangeText={(text) => handleChange(i, "predecessors", text)}
                         />
-
                         <Pressable
                             onPress={() => handleRemove(i)}
                             className="bg-red-500 rounded-md p-2 mt-1"

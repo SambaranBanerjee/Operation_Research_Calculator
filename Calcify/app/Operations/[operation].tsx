@@ -6,7 +6,7 @@ import { operations } from "@/utils/operations";
 import TransportationForm from "@/components/problems/TransportationForm";
 import LPPForm from "@/components/problems/LppForm";
 import ScreenWrapper from "@/components/screenwrapper";
-import GraphicalLPPlot from "@/components/problems/GraphicalLPPlot";
+//import GraphicalLPPlot from "@/components/problems/GraphicalLPPlot";
 import AssignmentForm from "@/components/problems/AssignmentForm";
 import NetworkFlowForm from "@/components/problems/NetworkFlowForm";
 //import { NetworkFlowVisualizer } from "@/components/networkVisualizer";
@@ -174,16 +174,103 @@ const Functions = () => {
           {result.method === "Graphical Method" ? (
             <>
               <Text className="text-xl font-semibold mb-2 text-black">
-                {result.objectiveType} Result
+              {result.objectiveType} Result
+            </Text>
+            
+            {/* Best Solution */}
+            <View className="bg-green-50 rounded-xl p-4 mb-4 border border-green-200">
+              <Text className="text-lg font-bold text-green-700 mb-2 text-center">
+                🏆 Optimal Solution
               </Text>
-              <Text className="text-black mb-2">
-                Best Solution: ({result.bestSolution.point[0].toFixed(2)}, {result.bestSolution.point[1].toFixed(2)})
+              <Text className="text-black mb-1">
+                Point: ({result.bestSolution.point[0].toFixed(2)}, {result.bestSolution.point[1].toFixed(2)})
               </Text>
-              <Text className="text-black mb-4">
+              <Text className="text-black font-bold">
                 Objective Value: {result.bestSolution.value.toFixed(2)}
               </Text>
+            </View>
 
-              {result.plotData && <GraphicalLPPlot plotData={result.plotData} />}
+            {/* All Feasible Points */}
+            <View className="bg-blue-50 rounded-xl p-4 mb-6 border border-blue-200">
+              <Text className="text-lg font-bold text-blue-700 mb-3 text-center">
+                📊 All Feasible Points
+              </Text>
+              
+              {result.feasiblePoints && result.feasiblePoints.length > 0 ? (
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  <View>
+                    {/* Header Row */}
+                    <View className="flex-row border-b border-blue-300 mb-2">
+                      <View className="w-24 justify-center items-center p-3 bg-blue-100 rounded-l-md">
+                        <Text className="font-bold text-blue-800">Point</Text>
+                      </View>
+                      <View className="w-32 justify-center items-center p-3 bg-blue-100">
+                        <Text className="font-bold text-blue-800">Coordinates (x,y)</Text>
+                      </View>
+                      <View className="w-28 justify-center items-center p-3 bg-blue-100 rounded-r-md">
+                        <Text className="font-bold text-blue-800">Objective Value</Text>
+                      </View>
+                    </View>
+
+                    {/* Feasible Points Rows */}
+                    {result.feasiblePoints.map((pointData: any, index: number) => {
+                      const isOptimal = pointData.point[0] === result.bestSolution.point[0] && 
+                                       pointData.point[1] === result.bestSolution.point[1];
+                      
+                      return (
+                        <View
+                          key={index}
+                          className={`flex-row mb-2 rounded-md shadow-sm ${
+                            isOptimal ? 'bg-green-100 border-2 border-green-400' : 'bg-white'
+                          }`}
+                        >
+                          <View className="w-24 justify-center items-center p-3 rounded-l-md">
+                            <Text className={`font-semibold ${isOptimal ? 'text-green-700' : 'text-black'}`}>
+                              P{index + 1}
+                              {isOptimal && " ★"}
+                            </Text>
+                          </View>
+                          <View className="w-32 justify-center items-center p-3">
+                            <Text className={`${isOptimal ? 'text-green-700 font-bold' : 'text-black'}`}>
+                              ({pointData.point[0].toFixed(2)}, {pointData.point[1].toFixed(2)})
+                            </Text>
+                          </View>
+                          <View className="w-28 justify-center items-center p-3 rounded-r-md">
+                            <Text className={`${isOptimal ? 'text-green-700 font-bold' : 'text-black'}`}>
+                              {pointData.value.toFixed(2)}
+                            </Text>
+                          </View>
+                        </View>
+                      );
+                    })}
+                  </View>
+                </ScrollView>
+              ) : (
+                <Text className="text-center text-gray-500 italic">
+                  No feasible points found.
+                </Text>
+              )}
+
+              {/* Summary Statistics */}
+              {result.feasiblePoints && result.feasiblePoints.length > 0 && (
+                <View className="mt-4 bg-white rounded-lg p-3 border border-gray-200">
+                  <Text className="text-sm font-semibold text-gray-700 mb-1 text-center">
+                    📈 Summary
+                  </Text>
+                  <View className="flex-row justify-between">
+                    <Text className="text-xs text-gray-600">
+                      Total Points: {result.feasiblePoints.length}
+                    </Text>
+                    <Text className="text-xs text-gray-600">
+                      Feasible Region: {result.feasibleRegion?.length || 0} vertices
+                    </Text>
+                  </View>
+                </View>
+              )}
+            </View>
+
+            {/* Graphical Plot */}
+            {/*result.plotData && <GraphicalLPPlot plotData={result.plotData} />*/}
             </>
           ) : operation === "transportationProblem" ? (
           <View className="bg-white rounded-2xl shadow p-6 mb-8">

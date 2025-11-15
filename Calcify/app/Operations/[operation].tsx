@@ -1,5 +1,5 @@
 // app/[operation].tsx
-import { View, Text, Pressable, ScrollView } from "react-native";
+import { View, Text, Pressable, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState, useEffect } from "react";
 import { operations } from "@/utils/operations";
@@ -167,8 +167,16 @@ const Functions = () => {
   // Showing the result
   if (showResult && result) {
     return (
-      <ScreenWrapper>
-        <ScrollView className="p-6 mt-28">
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+      >
+        <ScreenWrapper>
+        <ScrollView 
+          showsVerticalScrollIndicator 
+          className="p-6 mt-28"
+          contentContainerStyle={{ paddingBottom: 150 }}
+        >
           <Text className="text-3xl font-bold mb-4 text-black">Result</Text>
 
           {result.method === "Graphical Method" ? (
@@ -545,6 +553,7 @@ const Functions = () => {
           <BackButton />
         </ScrollView>
       </ScreenWrapper>
+      </KeyboardAvoidingView>
     );
   }
 

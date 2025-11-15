@@ -35,6 +35,7 @@ const SearchBar = () => {
       <TextInput
         className="h-10 text-black border border-gray-400 mb-5 px-3 py-2 rounded"
         placeholder="Search..."
+        placeholderTextColor="#000000"
         value={searchQuery}
         onChangeText={handleSearch}
       />

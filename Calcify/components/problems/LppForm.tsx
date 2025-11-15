@@ -32,6 +32,9 @@ const LPPForm: React.FC<LPPFormProps> = ({ onBack, onSubmit, selectedMethod }) =
     ]);
   };
 
+  const handleRemove = (index: number) =>
+        setConstraints(constraints.filter((_, idx) => idx !== index));
+
   const handleSubmit = () => {
     if (selectedMethod === "graph" && numVars > 2) {
       setMessage("Graphical Method supports only 2 variables. Please use Simplex.");
@@ -158,6 +161,12 @@ const LPPForm: React.FC<LPPFormProps> = ({ onBack, onSubmit, selectedMethod }) =
                 setConstraints(newConstraints);
               }}
             />
+            <Pressable
+              onPress={() => handleRemove(idx)}
+              className="bg-red-500 rounded-md p-2 mt-1"
+            >
+              <Text className="text-center text-white font-semibold">Remove</Text>
+            </Pressable>
           </View>
         ))}
 
